@@ -21,3 +21,6 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
+
+// Exporta la app para que Vercel la utilice
+// module.exports = app;
