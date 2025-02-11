@@ -8,19 +8,20 @@ require("dotenv").config();
 const PORT = process.env.PORT;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "50mb" })); // Ajusta según sea necesario
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 // Usar las rutas
-app.use('/api', gestionVehiculosRoutes);
+app.use("/api", gestionVehiculosRoutes);
 
 app.get("/", (req, res) => {
     res.send("Hello World!");
 });
 
 // Iniciar el servidor
-// app.listen(PORT, () => {
-//     console.log(`Servidor escuchando en http://localhost:${PORT}`);
-// });
+app.listen(PORT, () => {
+    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+});
 
 // Exporta la app para que Vercel la utilice
-module.exports = app;
+// module.exports = app;

@@ -1,27 +1,45 @@
-// const Pool = require("pg-pool");
-// require("dotenv").config();
-
-// const pool = new Pool({
-//     host: process.env.DB_HOST,
-//     user: process.env.DB_USER,
-//     password: process.env.DB_PASSWORD,
-//     database: process.env.DB_NAME,
-// });
-
-// module.exports = pool;
-
-const Pool = require("pg-pool");
+// src/config/firebase.js
 require("dotenv").config();
+const admin = require("firebase-admin");
 
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT || 5432, // Usa el puerto 5432 si DB_PORT no está definido
-    ssl: {
-        rejectUnauthorized: false,
-    },
-});
+// Función para procesar la clave privada
+const processPrivateKey = (key) => {
+    // Verifica si la clave viene con comillas y las remueve si es necesario
+    const cleanKey = key?.replace(/"/g, "") || "";
+    // Reemplaza los \n escapados por saltos de línea reales
+    return cleanKey.replace(/\\n/g, "\n");
+};
 
-module.exports = pool;
+const serviceAccount = {
+    type: process.env.FIREBASE_TYPE,
+    project_id: process.env.FIREBASE_PROJECT_ID,
+    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+    private_key: processPrivateKey(process.env.FIREBASE_PRIVATE_KEY),
+    client_email: process.env.FIREBASE_CLIENT_EMAIL,
+    client_id: process.env.FIREBASE_CLIENT_ID,
+    auth_uri: process.env.FIREBASE_AUTH_URI,
+    token_uri: process.env.FIREBASE_TOKEN_URI,
+    auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+    client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
+    universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN,
+};
+
+let db;
+
+try {
+    if (!admin.apps.length) {
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+        });
+        console.log("Firebase inicializado correctamente");
+        db = admin.firestore();
+    } else {
+        db = admin.firestore();
+    }
+} catch (error) {
+    console.error("Error al inicializar Firebase:", error);
+    console.error("Service Account:", JSON.stringify(serviceAccount, null, 2));
+    throw error;
+}
+
+module.exports = { db, admin };

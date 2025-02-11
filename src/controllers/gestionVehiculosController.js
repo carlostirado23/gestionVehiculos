@@ -1,53 +1,53 @@
-const Pool = require("../../config/database");
+const db = require("../../config/database").db;
 
 // Obtener todos los vehículos
-const getVehiculos = async (req, res) => {
+exports.getVehiculos = async (req, res) => {
     try {
-        const result = await Pool.query("SELECT * FROM vehiculos");
-        res.status(200).json(result.rows);
+        const snapshot = await db.collection("vehiculos").get();
+        const vehiculos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        res.status(200).json(vehiculos);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error al obtener los vehículos" });
+        console.error("Error al obtener vehiculos:", error);
+        res.status(500).send("Error al obtener vehiculos");
     }
 };
 
 // Obtener todos los conceptos
-const getConceptos = async (req, res) => {
+exports.getConceptos = async (req, res) => {
     try {
-        const result = await Pool.query("SELECT * FROM conceptos");
-        res.status(200).json(result.rows);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error al obtener los conceptos" });
+        const snapshot = await db.collection("conceptos").get();
+        const conceptos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        res.status(200).json(conceptos);
     }
-};
+    catch (error) {
+        console.error("Error al obtener conceptos:", error);
+        res.status(500).send("Error al obtener conceptos");
+        }
+}
 
 // Obtener todos los proveedores
-const getProveedores = async (req, res) => {
+exports.getProveedores = async (req, res) => {
     try {
-        const result = await Pool.query("SELECT * FROM proveedores");
-        res.status(200).json(result.rows);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error al obtener los proveedores" });
+        const snapshot = await db.collection("proveedores").get();
+        const proveedores = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        res.status(200).json(proveedores);
     }
-};
+    catch (error) {
+        console.error("Error al obtener proveedores:", error);
+        res.status(500).send("Error al obtener proveedores");
+        }
+}
 
 // Obtener todos los costos
-const getCostos = async (req, res) => {
+exports.getCostos = async (req, res) => {
     try {
-        const result = await Pool.query("SELECT * FROM costos");
-        res.status(200).json(result.rows);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Error al obtener los costos" });
+        const snapshot = await db.collection("costos").get();
+        const costos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        res.status(200).json(costos);
     }
-};
+    catch (error) {
+        console.error("Error al obtener costos:", error);
+        res.status(500).send("Error al obtener costos");
+        }
+}
 
-// Exportar funciones
-module.exports = {
-    getVehiculos,
-    getConceptos,
-    getProveedores,
-    getCostos,
-};
